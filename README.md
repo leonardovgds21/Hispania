@@ -2,7 +2,7 @@
 
 **▶ Jogue agora no navegador: [https://leonardovgds21.github.io/Hispania/](https://leonardovgds21.github.io/Hispania/)**
 
-Este é o link jogável: abra, escolha um espaço de save e comece. Não precisa instalar nada (recomendado: computador com teclado e mouse).
+Este é o link jogável: abra, escolha um espaço de save e comece. Não precisa instalar nada. Funciona no computador (teclado e mouse) e no celular ou tablet, com setas e botões na tela.
 
 RPG 2D de navegador que conta a história da Espanha, da pré-história até hoje. O herói é uma linhagem que evolui a cada capítulo: caçador com lança → guerreiro celtibero → legionário → visigodo → infante asturiano → cavaleiro → espingardeiro → soldado do tercio → guerrilheiro → soldado → guardião do Prado → jornalista → deputado → presidente do governo.
 
@@ -28,7 +28,9 @@ RPG 2D de navegador que conta a história da Espanha, da pré-história até hoj
 | Q | Poção |
 | R | Recarregar |
 | J · C · M | Diário · Crônicas · Mapa |
-| Esc | Menu |
+| Esc ou botão ☰ Menu | Menu: diário, crônicas, mapa, opções, teclas e capítulos |
+
+No celular ou tablet, os controles aparecem na tela automaticamente: setas à esquerda para andar e, à direita, ⚔ Atacar (mira no inimigo mais próximo), ✋ Usar, 💨 Esquiva, 🧪 Poção e 🔄 Recarregar. Tocar no mapa ataca naquela direção, e tocar numa pessoa ou objeto próximo interage. Os controles de toque podem ser ligados ou desligados no menu.
 
 ## Rodar localmente
 

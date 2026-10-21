@@ -547,12 +547,12 @@ function update(dt) {
   S.stats.time += dt;
   G.time += dt;
 
-  // movimento: W cima, S baixo, A esquerda, D direita
+  // movimento: W cima, S baixo, A esquerda, D direita (ou o direcional de toque)
   let mx = 0, my = 0;
-  if (G.keys.KeyA || G.keys.ArrowLeft) mx -= 1;
-  if (G.keys.KeyD || G.keys.ArrowRight) mx += 1;
-  if (G.keys.KeyW || G.keys.ArrowUp) my -= 1;
-  if (G.keys.KeyS || G.keys.ArrowDown) my += 1;
+  if (held('left')) mx -= 1;
+  if (held('right')) mx += 1;
+  if (held('up')) my -= 1;
+  if (held('down')) my += 1;
   const len = Math.hypot(mx, my) || 1;
   mx /= len; my /= len;
   p.moving = mx !== 0 || my !== 0;
@@ -567,9 +567,10 @@ function update(dt) {
   if (p.moving) p.walkT += dt;
   p.cd -= dt; p.atkT -= dt; p.invT -= dt; p.dashCd -= dt; p.hurtT -= dt;
   if (p.reloadT > 0) { p.reloadT -= dt; if (p.reloadT <= 0) { p.ammo = weapon().mag; p.reloadT = 0; } }
-  p.aim = Math.atan2(G.mouse.y + G.cam.y - (p.y - 6), G.mouse.x + G.cam.x - p.x);
+  if (Touch.on) aimTouch(p, mx, my);
+  else p.aim = Math.atan2(G.mouse.y + G.cam.y - (p.y - 6), G.mouse.x + G.cam.x - p.x);
 
-  if (G.mouse.down && !G.hoverInRange) playerAttack();
+  if ((G.mouse.down && !G.hoverInRange) || G.touchAttack) playerAttack();
 
   // inimigos
   const near = [];
@@ -653,22 +654,69 @@ function update(dt) {
   G.cam.y = clamp(G.cam.y, 0, Math.max(0, G.world.H * TILE - VH));
   G.shake = Math.max(0, G.shake - dt * 30);
 
-  // hover
-  const wx = G.mouse.x + G.cam.x, wy = G.mouse.y + G.cam.y;
-  G.hover = null; G.hoverInRange = false;
-  let best = 36;
-  for (const o of G.objs) {
-    if (o.kind === 'coin' || o.kind === 'potion') continue;
-    if (o.kind === 'chest' && o.opened) continue;
-    const d = dist(wx, wy, o.x, o.y - 10);
-    if (d < best) { best = d; G.hover = o; }
+  // hover: no computador, o objeto sob o mouse; no toque, o objeto interativo mais próximo
+  if (Touch.on) { G.hover = nearestInteractable(); G.hoverInRange = !!G.hover; }
+  else {
+    G.hover = objectAt(G.mouse.x + G.cam.x, G.mouse.y + G.cam.y, 36);
+    G.hoverInRange = !!G.hover && dist(p.x, p.y, G.hover.x, G.hover.y) < INTERACT_RANGE;
   }
-  if (G.hover) G.hoverInRange = dist(p.x, p.y, G.hover.x, G.hover.y) < INTERACT_RANGE;
 
   G.saveT += dt;
   if (G.saveT > 20) { G.saveT = 0; save(); }
   G.hudT -= dt;
   if (G.hudT <= 0) { G.hudT = 0.1; UI.hud(); }
+}
+
+// Teclado (WASD/setas) ou direcional de toque
+function held(dir) {
+  const k = G.keys;
+  if (dir === 'left') return k.KeyA || k.ArrowLeft || k.TouchLeft;
+  if (dir === 'right') return k.KeyD || k.ArrowRight || k.TouchRight;
+  if (dir === 'up') return k.KeyW || k.ArrowUp || k.TouchUp;
+  return k.KeyS || k.ArrowDown || k.TouchDown;
+}
+
+// Mira no toque: segue o dedo; segurando ⚔, mira no inimigo mais próximo; senão, olha para onde anda
+function aimTouch(p, mx, my) {
+  if (G.mouse.down) { p.aim = Math.atan2(G.mouse.y + G.cam.y - (p.y - 6), G.mouse.x + G.cam.x - p.x); return; }
+  if (G.touchAttack) {
+    const t = nearestEnemy(p, 460);
+    if (t) { p.aim = Math.atan2(t.y - (p.y - 6), t.x - p.x); return; }
+  }
+  if (mx || my) p.aim = Math.atan2(my, mx);
+}
+
+function nearestEnemy(p, maxD) {
+  let best = null, bd = maxD;
+  for (const e of G.enemies) {
+    if (e.dead) continue;
+    const d = dist(p.x, p.y, e.x, e.y);
+    if (d < bd) { bd = d; best = e; }
+  }
+  return best;
+}
+
+// Objeto interativo mais perto de um ponto do mundo (até r pixels)
+function objectAt(wx, wy, r) {
+  let best = null, bd = r;
+  for (const o of G.objs) {
+    if (o.kind === 'coin' || o.kind === 'potion' || (o.kind === 'chest' && o.opened)) continue;
+    const d = dist(wx, wy, o.x, o.y - 10);
+    if (d < bd) { bd = d; best = o; }
+  }
+  return best;
+}
+
+function doDash() {
+  const p = G.player;
+  if (p.dashCd > 0) return;
+  let dx = 0, dy = 0;
+  if (held('left')) dx -= 1; if (held('right')) dx += 1;
+  if (held('up')) dy -= 1; if (held('down')) dy += 1;
+  if (!dx && !dy) { dx = Math.cos(p.aim); dy = Math.sin(p.aim); }
+  const l = Math.hypot(dx, dy);
+  p.dashX = dx / l; p.dashY = dy / l; p.dashT = 0.16; p.dashCd = 0.75;
+  Sfx.play('dash');
 }
 
 function updateEnemy(e, dt) {
@@ -972,7 +1020,7 @@ function render() {
   // rótulo do hover
   if (G.hover) {
     const o = G.hover;
-    const label = o.name + (G.hoverInRange ? '  ' + T('click') : '');
+    const label = o.name + (G.hoverInRange ? '  ' + T(Touch.on ? 'tap' : 'click') : '');
     ctx.font = 'bold 13px sans-serif';
     const w = ctx.measureText(label).width + 12;
     ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(o.x - w / 2, o.y - 62, w, 20);
@@ -1088,7 +1136,8 @@ function drawObjective(t, color) {
 function drawBossBar() {
   const b = G.boss;
   if (!b) return;
-  const w = Math.min(520, VW - 40), x = (VW - w) / 2, y = VH - 60;
+  // no toque, a barra fica mais estreita para não passar por cima do direcional e dos botões
+  const w = Touch.on ? Math.max(180, Math.min(420, VW - 420)) : Math.min(520, VW - 40), x = (VW - w) / 2, y = VH - 60;
   ctx.fillStyle = 'rgba(0,0,0,0.75)'; ctx.fillRect(x - 4, y - 22, w + 8, 38);
   ctx.fillStyle = '#400'; ctx.fillRect(x, y, w, 12);
   ctx.fillStyle = b.hp < b.maxHp / 2 ? '#ff3a1a' : '#c92020'; ctx.fillRect(x, y, w * Math.max(0, b.hp) / b.maxHp, 12);
@@ -1098,9 +1147,10 @@ function drawBossBar() {
 
 function drawMinimap() {
   const mm = G.world.minimap();
-  const s = Math.min(1.6, 180 / G.world.W);
+  // no toque, o minimapa sobe para o canto superior direito (embaixo ficam os botões de ação)
+  const s = Touch.on ? Math.min(1, 110 / G.world.W) : Math.min(1.6, 180 / G.world.W);
   const w = G.world.W * s, h = G.world.H * s;
-  const x = VW - w - 12, y = VH - h - 12;
+  const x = VW - w - 12, y = Touch.on ? 12 : VH - h - 12;
   ctx.globalAlpha = 0.85;
   ctx.fillStyle = '#000'; ctx.fillRect(x - 3, y - 3, w + 6, h + 6);
   ctx.imageSmoothingEnabled = false;
@@ -1121,7 +1171,7 @@ function drawMinimap() {
 }
 
 function drawCrosshair() {
-  if (G.ui) return;
+  if (G.ui || Touch.on) return;
   const { x, y } = G.mouse;
   ctx.strokeStyle = G.hoverInRange ? '#ffd84a' : '#fff'; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.arc(x, y, 8, 0, 7); ctx.stroke();
@@ -1137,28 +1187,18 @@ window.addEventListener('keydown', (e) => {
   if (!G.running || G.ui) return;
   G.keys[e.code] = true;
   switch (e.code) {
-    case 'Space':
-      if (G.player.dashCd <= 0) {
-        const p = G.player;
-        let dx = 0, dy = 0;
-        if (G.keys.KeyA || G.keys.ArrowLeft) dx -= 1; if (G.keys.KeyD || G.keys.ArrowRight) dx += 1;
-        if (G.keys.KeyW || G.keys.ArrowUp) dy -= 1; if (G.keys.KeyS || G.keys.ArrowDown) dy += 1;
-        if (!dx && !dy) { dx = Math.cos(p.aim); dy = Math.sin(p.aim); }
-        const l = Math.hypot(dx, dy);
-        p.dashX = dx / l; p.dashY = dy / l; p.dashT = 0.16; p.dashCd = 0.75;
-        Sfx.play('dash');
-      }
-      break;
+    case 'Space': doDash(); break;
     case 'KeyE': interact(nearestInteractable()); break;
     case 'KeyQ': usePotion(); break;
     case 'KeyR': startReload(); break;
   }
 });
 window.addEventListener('keyup', (e) => { G.keys[e.code] = false; });
-window.addEventListener('blur', () => { G.keys = {}; G.mouse.down = false; });
+window.addEventListener('blur', () => { G.keys = {}; G.mouse.down = false; G.touchAttack = false; });
 canvas.addEventListener('mousemove', (e) => { G.mouse.x = e.clientX; G.mouse.y = e.clientY; });
 canvas.addEventListener('mousedown', (e) => {
   Sfx.init();
+  if (Date.now() - Touch.lastTouch < 800) return; // clique falso gerado pelo navegador depois de um toque
   if (!G.running || G.ui) return;
   if (e.button !== 0) return;
   if (G.hover && G.hoverInRange) { interact(G.hover); return; }
