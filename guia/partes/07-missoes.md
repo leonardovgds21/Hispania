@@ -165,7 +165,15 @@ Um "!" **dourado** indica que a história principal quer falar com aquela pessoa
 
 @code js/game.js function chapterComplete()
 
-Ao concluir a missão principal: mostra a narração de encerramento, a tela de **evolução da linhagem** (o herói antigo ao lado do novo, com a arma nova) e carrega o próximo capítulo. No último capítulo, mostra o final.
+Ao concluir a missão principal, o jogo mostra a narração de encerramento e pergunta ao jogador se ele quer **partir para a próxima era** ou **ficar e explorar** a época atual (terminar missões secundárias, achar crônicas e baús). No último capítulo, mostra o final.
+
+@code js/game.js function offerNextChapter()
+
+Quem fica pode partir quando quiser falando com o **guia** do capítulo, que é o personagem da primeira conversa da história (a Anciã Ama no capítulo 1). O guia ganha um "!" dourado e a seta do objetivo passa a apontar para ele:
+
+@code js/game.js function guideNpc()
+
+Ao partir, `goToNextChapter` mostra a tela de **evolução da linhagem** (o herói antigo ao lado do novo, com a arma nova) e carrega o próximo capítulo.
 
 > [mao] **Crie a sua primeira missão.** No capítulo 1 (`js/data/chapters1.js`), adicione esta missão no fim da lista `quests`, logo antes do `]` final, separada por vírgula:
 > ```js

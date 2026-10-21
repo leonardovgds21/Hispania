@@ -241,13 +241,36 @@ function chapterComplete() {
   if (next < CHAPTERS.length) G.S.maxChapter = Math.max(G.S.maxChapter, next);
   save();
   UI.narration(G.ch.title, G.ch.outro, () => {
-    if (next < CHAPTERS.length) {
-      const fromCls = CLASSES[G.ch.cls], toCls = CLASSES[CHAPTERS[next].cls];
-      UI.evolution(fromCls, toCls, CHAPTERS[next], () => enterChapter(next));
-    } else {
-      UI.ending();
-    }
+    if (next < CHAPTERS.length) offerNextChapter();
+    else UI.ending();
   });
+}
+
+// O "guia" de cada capítulo é quem passa a primeira missão da história (Anciã Ama no capítulo 1).
+// Depois do capítulo concluído, é com ele que o jogador fala para seguir para a próxima era.
+function guideNpc() {
+  const s = G.ch.quests[0].steps.find(st => st.t === 'talk');
+  return s ? G.objs.find(o => o.kind === 'npc' && o.id === s.npc) : null;
+}
+function canAdvanceHere() {
+  return chState(G.ch.id).done && G.chIdx + 1 < CHAPTERS.length;
+}
+
+// Pergunta se o jogador quer seguir agora ou continuar explorando este capítulo
+function offerNextChapter() {
+  const next = CHAPTERS[G.chIdx + 1];
+  const guide = guideNpc();
+  const guideName = guide ? guide.name : '?';
+  UI.quiz(T('crossroads'), T('crossroadsQ', next.title, next.years), [T('goNext'), T('stayHere', guideName)], (i) => {
+    if (i === 0) goToNextChapter();
+    else { UI.toast(T('stayToast', guideName), 'main'); save(); UI.hud(true); }
+  });
+}
+
+function goToNextChapter() {
+  const next = G.chIdx + 1;
+  const fromCls = CLASSES[G.ch.cls], toCls = CLASSES[CHAPTERS[next].cls];
+  UI.evolution(fromCls, toCls, CHAPTERS[next], () => enterChapter(next));
 }
 
 function enterChapter(idx, keepPos) {
@@ -340,6 +363,10 @@ function talkTo(npc) {
       return;
     }
     if (s.t === 'quiz') { runQuiz(quest, s, npc); return; }
+  }
+  if (canAdvanceHere() && guideNpc() === npc) {
+    UI.dialog([[npc.id, T('guideLine')]], offerNextChapter);
+    return;
   }
   const lines = npc.def.lines || ['...'];
   const line = lines[npc.line % lines.length];
@@ -940,6 +967,7 @@ function render() {
   // marcador do objetivo
   const tgt = questTarget(G.ch.quests[0]);
   if (tgt && !qState('main').done) drawObjective(tgt, '#ffd84a');
+  else if (canAdvanceHere()) { const g = guideNpc(); if (g) drawObjective({ x: g.x, y: g.y, label: g.name }, '#ffd84a'); }
 
   // rótulo do hover
   if (G.hover) {
@@ -986,6 +1014,7 @@ function npcMarker(npc) {
     const s = curStep(quest);
     if (s && (s.t === 'talk' || s.t === 'quiz') && s.npc === npc.id) return quest.id === 'main' ? '#ffd84a' : '#9ad0ff';
   }
+  if (canAdvanceHere() && guideNpc() === npc) return '#ffd84a';
   return null;
 }
 

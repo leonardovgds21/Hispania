@@ -24,7 +24,7 @@ const DRUMS = {
 // Temas: lead/second = instrumentos da melodia; bass = alaúde grave nos tempos fortes
 const THEMES = {
   title: { mode: 'dorian', root: 62, bpm: 84, lead: 'recorder', second: 'lute', drone: true, drum: 'cantiga', seed: 7 },
-  c1:  { mode: 'penta', root: 57, bpm: 66, lead: 'flute', second: 'flute', drone: true, drum: 'slow', seed: 11, low: true },
+  c1:  { mode: 'penta', root: 57, bpm: 66, lead: 'flute', second: 'lute', drone: true, drum: 'none', seed: 11, soft: true },
   c2:  { mode: 'phrygian', root: 64, bpm: 100, lead: 'shawm', second: 'lute', drone: true, drum: 'march', seed: 22 },
   c3:  { mode: 'mixolydian', root: 67, bpm: 92, lead: 'recorder', second: 'lute', drone: false, drum: 'cantiga', seed: 33 },
   c4:  { mode: 'dorian', root: 62, bpm: 70, lead: 'flute', second: 'recorder', drone: true, drum: 'none', seed: 44 },
@@ -123,13 +123,14 @@ const Music = {
     const rng = mulberry32(th.seed * 1000 + variant);
     const scale = MODES[th.mode];
     const n = scale.length;
-    const rhythms = [[3, 3], [2, 1, 2, 1], [2, 1, 3], [1, 1, 1, 3], [3, 2, 1], [2, 2, 2], [1, 1, 1, 1, 2], [4, 2]];
+    // temas suaves usam notas longas e espaçadas; os demais, ritmos de dança
+    const rhythms = th.soft ? [[3, 3], [6], [4, 2], [2, 4], [3, 3]] : [[3, 3], [2, 1, 2, 1], [2, 1, 3], [1, 1, 1, 3], [3, 2, 1], [2, 2, 2], [1, 1, 1, 1, 2], [4, 2]];
     const phrase = (bars, startDeg, endDeg, hi) => {
       const notes = [];
       let deg = startDeg, t = 0;
       for (let b = 0; b < bars; b++) {
         const last = b === bars - 1;
-        const r = last ? (rng() < 0.5 ? [2, 1, 3] : [1, 1, 1, 3]) : rhythms[Math.floor(rng() * rhythms.length)];
+        const r = last ? (th.soft ? [6] : rng() < 0.5 ? [2, 1, 3] : [1, 1, 1, 3]) : rhythms[Math.floor(rng() * rhythms.length)];
         r.forEach((dur, i) => {
           const final = last && i === r.length - 1;
           if (final) deg = endDeg;
@@ -277,9 +278,11 @@ const Music = {
     else if (inst === 'flute') { o.type = 'sine'; flt.type = 'lowpass'; flt.frequency.value = 3000; peak = 0.09; }
     else { o.type = 'triangle'; flt.type = 'lowpass'; flt.frequency.value = 2400; peak = 0.075; }
     o.frequency.value = f;
-    lfo.frequency.value = 5.2; lfoG.gain.value = f * 0.006;
+    const soft = this.th && this.th.soft;
+    lfo.frequency.value = soft ? 4.2 : 5.2; lfoG.gain.value = f * (soft ? 0.003 : 0.006);
+    if (soft) { peak *= 0.75; flt.frequency.value = 1800; }
     lfo.connect(lfoG); lfoG.connect(o.frequency);
-    const att = inst === 'shawm' ? 0.03 : 0.05, end = when + Math.max(0.12, dur * 0.92);
+    const att = soft ? 0.18 : inst === 'shawm' ? 0.03 : 0.05, end = when + Math.max(0.12, dur * (soft ? 1 : 0.92));
     g.gain.setValueAtTime(0.0001, when);
     g.gain.exponentialRampToValueAtTime(peak * vol, when + att);
     g.gain.setValueAtTime(peak * vol * 0.85, end - 0.04);
@@ -289,7 +292,7 @@ const Music = {
     if (inst === 'flute') {
       const n = ctx.createBufferSource(), ng = ctx.createGain(), nf = ctx.createBiquadFilter();
       n.buffer = this.noiseBuf; nf.type = 'bandpass'; nf.frequency.value = f * 2; nf.Q.value = 3;
-      ng.gain.setValueAtTime(0.012 * vol, when); ng.gain.exponentialRampToValueAtTime(0.0001, end + 0.05);
+      ng.gain.setValueAtTime((soft ? 0.004 : 0.012) * vol, when); ng.gain.exponentialRampToValueAtTime(0.0001, end + 0.05);
       n.connect(nf); nf.connect(ng); ng.connect(this.bus); n.start(when); n.stop(end + 0.1);
     }
     o.start(when); lfo.start(when); o.stop(end + 0.12); lfo.stop(end + 0.12);
@@ -301,7 +304,7 @@ const Music = {
     const nodes = [];
     const g = ctx.createGain(), lp = ctx.createBiquadFilter();
     lp.type = 'lowpass'; lp.frequency.value = 700;
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.035, t + 3);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(th.soft ? 0.018 : 0.035, t + 3);
     lp.connect(g); g.connect(this.bus);
     const root = th.root + (th.low ? -12 : 0) - 24;
     for (const [m, det] of [[root, -4], [root, 4], [root + 7, 0]]) {
