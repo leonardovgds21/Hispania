@@ -28,7 +28,10 @@ const STR = {
     closer: 'Chegue mais perto.', chestLoot: 'Baú: +{0} {1}', chestPot: ', +1 poção', click: '[clique]',
     // HUD
     lvl: 'Nv', reloading: 'recarregando…', chapterHud: 'Cap. {0}/{1} · {2} ({3})',
-    chapterDone: '★ Capítulo concluído', chapterDoneTxt: 'Explore, termine missões secundárias ou avance pelo menu (Esc).',
+    chapterDone: '★ Capítulo concluído', chapterDoneTxt: 'Explore à vontade: missões secundárias, crônicas e baús. Quando quiser seguir para a próxima era, fale com {0}.', chapterDoneLast: 'Explore à vontade: missões secundárias, crônicas e baús.',
+    crossroads: 'O fim de uma era', crossroadsQ: 'A história da sua linhagem continua em "{0}" ({1}). Deseja partir agora ou ficar mais um tempo nesta época, terminando missões secundárias e procurando crônicas e baús?',
+    goNext: 'Partir para a próxima era ▸', stayHere: 'Ficar e explorar esta época (depois, fale com {0})',
+    stayToast: 'Quando quiser seguir para a próxima era, fale com {0}.', guideLine: 'Você já fez muito por esta terra. Quando estiver pronto, a próxima era espera pela sua linhagem.',
     keysBar: 'WASD andar · Mouse mirar · Clique atacar/interagir · Espaço esquiva · Q poção · R recarregar · J diário · C crônicas · M mapa · Esc menu',
     // diálogo
     next: 'Clique ou Espaço ▸', end: 'Clique ou Espaço ✓', quizHint: 'Escolha com o mouse ou teclas 1–{0}',
@@ -89,7 +92,10 @@ const STR = {
     noPotions: '¡Sin pociones! Cómpralas al mercader.', lifeFloat: '+vida', potionFloat: '+1 poción',
     closer: 'Acércate más.', chestLoot: 'Cofre: +{0} {1}', chestPot: ', +1 poción', click: '[clic]',
     lvl: 'Nv', reloading: 'recargando…', chapterHud: 'Cap. {0}/{1} · {2} ({3})',
-    chapterDone: '★ Capítulo completado', chapterDoneTxt: 'Explora, termina misiones secundarias o avanza desde el menú (Esc).',
+    chapterDone: '★ Capítulo completado', chapterDoneTxt: 'Explora a tu ritmo: misiones secundarias, crónicas y cofres. Cuando quieras avanzar a la siguiente época, habla con {0}.', chapterDoneLast: 'Explora a tu ritmo: misiones secundarias, crónicas y cofres.',
+    crossroads: 'El fin de una época', crossroadsQ: 'La historia de tu linaje continúa en «{0}» ({1}). ¿Quieres partir ahora o quedarte un tiempo más en esta época, terminando misiones secundarias y buscando crónicas y cofres?',
+    goNext: 'Partir hacia la siguiente época ▸', stayHere: 'Quedarse y explorar esta época (luego, habla con {0})',
+    stayToast: 'Cuando quieras avanzar a la siguiente época, habla con {0}.', guideLine: 'Ya has hecho mucho por esta tierra. Cuando estés listo, la siguiente época espera a tu linaje.',
     keysBar: 'WASD moverse · Ratón apuntar · Clic atacar/interactuar · Espacio esquivar · Q poción · R recargar · J diario · C crónicas · M mapa · Esc menú',
     next: 'Clic o Espacio ▸', end: 'Clic o Espacio ✓', quizHint: 'Elige con el ratón o las teclas 1–{0}',
     cont: 'Continuar ▸', start: 'Empezar ✓',

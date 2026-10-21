@@ -38,7 +38,7 @@ const UI = {
         if (s.t === 'kill' || s.t === 'collect') prog = ` <b>${q.prog}/${s.n}</b>`;
         html += `<div class="tq ${quest.id === 'main' ? 'main' : ''}"><div class="tt">${quest.id === 'main' ? '★' : '◆'} ${escapeHtml(quest.title)}</div><div>${escapeHtml(s.desc)}${prog}</div></div>`;
       }
-      if (qState('main').done) html = `<div class="tq main"><div class="tt">${T('chapterDone')}</div><div>${T('chapterDoneTxt')}</div></div>` + html;
+      if (qState('main').done) html = `<div class="tq main"><div class="tt">${T('chapterDone')}</div><div>${canAdvanceHere() && guideNpc() ? T('chapterDoneTxt', escapeHtml(guideNpc().name)) : T('chapterDoneLast')}</div></div>` + html;
       $('tracker').innerHTML = html;
     }
   },
