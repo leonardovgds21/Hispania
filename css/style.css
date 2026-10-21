@@ -204,3 +204,25 @@ body.touch #dialog { bottom: 10px; }
   #actions { transform: scale(0.82); transform-origin: bottom right; }
   body.touch .tracker { max-height: 20vh; }
 }
+
+/* Tela de título adaptável à altura da tela (monitores baixos e notebooks):
+   tamanhos e espaçamentos encolhem com a altura (vh) em vez de gerar rolagem */
+#title { padding: clamp(6px, 2vh, 16px) 16px; }
+.t-box { gap: clamp(5px, 1.4vh, 12px); }
+.t-logo { font-size: clamp(34px, min(10vw, 9vh), 76px); letter-spacing: clamp(4px, 1vh, 8px); line-height: 1.05; }
+.t-sub { font-size: clamp(14px, 2.6vh, 20px); margin-top: calc(-1 * clamp(2px, 0.8vh, 8px)); }
+.t-desc { margin: 0; font-size: clamp(12px, 2vh, 16px); }
+.t-foot { margin: 0; font-size: clamp(10px, 1.6vh, 12px); }
+.t-new input { padding: clamp(4px, 1vh, 8px) 10px; }
+.slots { gap: clamp(3px, 0.8vh, 6px); }
+.slot { padding: clamp(3px, 0.8vh, 7px) 10px; }
+.slot button, .slot .filebtn { padding: clamp(3px, 0.6vh, 5px) 10px; }
+.slot-name { font-size: clamp(13px, 2vh, 15px); }
+@media (max-height: 620px) { .t-desc { display: none; } }
+
+/* Se ainda precisar rolar (telas muito baixas), a barra fica fina e na cor do jogo */
+.t-box, #modal .box, .tracker { scrollbar-width: thin; scrollbar-color: #8a6a3a transparent; }
+.t-box::-webkit-scrollbar, #modal .box::-webkit-scrollbar { width: 8px; }
+.t-box::-webkit-scrollbar-thumb, #modal .box::-webkit-scrollbar-thumb { background: #8a6a3a; border-radius: 4px; }
+.t-box::-webkit-scrollbar-track, #modal .box::-webkit-scrollbar-track { background: transparent; }
+@media (max-height: 540px) { .t-foot { display: none; } .t-sub { display: none; } }
