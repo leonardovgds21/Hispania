@@ -1,5 +1,9 @@
 # Hispânia — De Atapuerca a La Moncloa
 
+**▶ Jogue agora no navegador: [https://leonardovgds21.github.io/Hispania/](https://leonardovgds21.github.io/Hispania/)**
+
+Este é o link jogável: abra, escolha um espaço de save e comece. Não precisa instalar nada (recomendado: computador com teclado e mouse).
+
 RPG 2D de navegador que conta a história da Espanha, da pré-história até hoje. O herói é uma linhagem que evolui a cada capítulo: caçador com lança → guerreiro celtibero → legionário → visigodo → infante asturiano → cavaleiro → espingardeiro → soldado do tercio → guerrilheiro → soldado → guardião do Prado → jornalista → deputado → presidente do governo.
 
 ## Conteúdo
