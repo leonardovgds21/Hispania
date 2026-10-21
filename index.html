@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>Hispânia — De Atapuerca a La Moncloa</title>
   <meta name="description" content="RPG 2D que conta a história da Espanha, da pré-história até hoje.">
   <link rel="stylesheet" href="css/style.css">
@@ -11,6 +11,7 @@
   <canvas id="game"></canvas>
 
   <div id="hud" class="hidden">
+    <div class="hud-left">
     <div class="panel stats">
       <div class="hname"><b id="h-name"></b> · <span id="h-class"></span></div>
       <div class="bar hp"><div id="h-hp"></div><span id="h-hpt"></span></div>
@@ -18,10 +19,15 @@
       <div class="hrow"><span id="h-gold"></span><span id="h-pot"></span></div>
       <div class="hrow"><span id="h-ammo"></span></div>
     </div>
+    <button id="menu-btn" class="hud-btn"></button>
+    </div>
     <div class="panel tracker" id="tracker"></div>
     <div class="chapter" id="h-chapter"></div>
     <div class="keys" id="keysbar"></div>
+    <div id="touch" class="hidden"></div>
   </div>
+
+  <div id="rotate-hint"></div>
 
   <div id="toasts"></div>
 
@@ -51,6 +57,7 @@
   <script src="js/entities.js"></script>
   <script src="js/game.js"></script>
   <script src="js/ui.js"></script>
-  <script>applyLanguage(); UI.staticTexts(); UI.title();</script>
+  <script src="js/touch.js"></script>
+  <script>applyLanguage(); Touch.init(); UI.staticTexts(); UI.title();</script>
 </body>
 </html>

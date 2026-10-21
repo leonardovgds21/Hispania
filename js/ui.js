@@ -20,13 +20,14 @@ const UI = {
     $('h-xp').style.width = (100 * S.xp / need) + '%';
     $('h-xpt').textContent = `XP ${S.xp} / ${need}`;
     $('h-gold').textContent = `💰 ${S.gold} ${G.ch.currency}`;
-    $('h-pot').textContent = `🧪 ${S.potions} [Q]`;
+    $('h-pot').textContent = `🧪 ${S.potions}${Touch.on ? '' : ' [Q]'}`;
     let ammo = w.name;
-    if (w.kind === 'gun') ammo += G.player.reloadT > 0 ? ' · ' + T('reloading') : ` · ${G.player.ammo}/${w.mag} [R]`;
+    if (w.kind === 'gun') ammo += G.player.reloadT > 0 ? ' · ' + T('reloading') : ` · ${G.player.ammo}/${w.mag}${Touch.on ? '' : ' [R]'}`;
     $('h-ammo').textContent = '⚔ ' + ammo;
     $('h-chapter').textContent = T('chapterHud', G.chIdx + 1, CHAPTERS.length, G.ch.title, G.ch.years);
     if (force || !this._trT || G.time - this._trT > 0.5) {
       this._trT = G.time;
+      Touch.update();
       let html = '';
       for (const quest of G.ch.quests) {
         const q = qState(quest.id);
@@ -345,6 +346,8 @@ const UI = {
         <button id="p-m">${T('mapBtn')}</button>
         <button id="p-snd">${T('sound', Sfx.enabled ? T('on') : T('off'))}</button>
         <button id="p-mus">${T('music', Music.enabled ? T('on2') : T('off2'))}</button>
+        <button id="p-touch">${T('touchCtl', Touch.prefLabel())}</button>
+        ${document.documentElement.requestFullscreen ? `<button id="p-full">${T(document.fullscreenElement ? 'exitFullscreen' : 'fullscreen')}</button>` : ''}
         <button id="p-exp">${T('export')}</button>
         <button id="p-help">${T('help')}</button>
         <button id="p-title">${T('toTitle')}</button>
@@ -360,6 +363,13 @@ const UI = {
     box.querySelector('#p-m').onclick = () => this.map();
     box.querySelector('#p-snd').onclick = () => { Sfx.enabled = !Sfx.enabled; S.sound = Sfx.enabled; save(); this.pause(); };
     box.querySelector('#p-mus').onclick = () => { Music.setEnabled(!Music.enabled); this.pause(); };
+    box.querySelector('#p-touch').onclick = () => { Touch.cyclePref(); this.pause(); };
+    const full = box.querySelector('#p-full');
+    if (full) full.onclick = () => {
+      const done = () => setTimeout(() => this.pause(), 150);
+      if (document.fullscreenElement) document.exitFullscreen().then(done, done);
+      else document.documentElement.requestFullscreen().then(done, done);
+    };
     box.querySelector('#p-exp').onclick = () => exportSave();
     box.querySelector('#p-help').onclick = () => this.help(() => this.pause());
     box.querySelector('#p-title').onclick = () => { save(); location.reload(); };
@@ -372,10 +382,13 @@ const UI = {
   },
 
   help(back) {
-    const rows = T('helpRows').map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('');
+    const table = (key) => `<table class="keys">${T(key).map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')}</table>`;
+    // no celular, os controles de toque aparecem primeiro; as teclas do computador vêm em seguida
+    const pc = `<h3>${T('helpPcTitle')}</h3>${table('helpRows')}`;
+    const touch = `<h3>${T('helpTouchTitle')}</h3>${table('helpTouchRows')}`;
     const box = this.modal(`
       <h2>${T('help')}</h2>
-      <table class="keys">${rows}</table>
+      ${Touch.on ? touch + pc : pc + touch}
       <p>${T('helpTxt')}</p>
       <div class="center"><button id="h-x">${T('back')}</button></div>`, 'journal');
     box.querySelector('#h-x').onclick = () => { this.closeModal(); if (back) back(); };
@@ -527,6 +540,8 @@ const UI = {
   // textos fixos do HTML
   staticTexts() {
     $('keysbar').textContent = T('keysBar');
+    $('menu-btn').textContent = T('menuBtn');
+    $('rotate-hint').textContent = T('rotateHint');
     document.title = T('logo').charAt(0) + T('logo').slice(1).toLowerCase() + ' — ' + T('subtitle');
   }
 };
