@@ -1,0 +1,6 @@
+# Ferramentas locais de teste (não fazem parte do jogo)
+.claude/
+
+# Arquivos gerados pelo guia/build.js (o PDF continua no repositório)
+guia/guia.html
+guia/trechos-extraidos.txt

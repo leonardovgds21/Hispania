@@ -1,0 +1,99 @@
+@page {
+  size: A4;
+  margin: 20mm 18mm 22mm 18mm;
+  @bottom-center { content: counter(page); font: 9pt Georgia, serif; color: #8a6a3a; }
+  @top-right { content: "Hispânia · Guia de Programação"; font: 8pt 'Segoe UI', sans-serif; color: #b8a080; }
+}
+@page :first { margin: 0; @bottom-center { content: none; } @top-right { content: none; } }
+
+* { box-sizing: border-box; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font: 10.5pt/1.6 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; color: #241a10; margin: 0; }
+
+/* capa */
+.cover {
+  height: 297mm; width: 210mm; page-break-after: always; position: relative; overflow: hidden;
+  background: radial-gradient(ellipse at 50% 35%, #7a3a14 0%, #3a1806 55%, #120802 100%); color: #f3e6c8;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 30mm;
+}
+.cover .logo { font: 64pt Georgia, serif; letter-spacing: 10px; color: #ffd84a; text-shadow: 0 4px 0 #a0201a; }
+.cover .sub { font: italic 20pt Georgia, serif; color: #f3d98a; margin-top: 4mm; }
+.cover .title { font: 26pt Georgia, serif; margin-top: 22mm; line-height: 1.25; }
+.cover .desc { font-size: 12pt; margin-top: 8mm; color: #e8d8b8; max-width: 140mm; }
+.cover .lineage { margin-top: 18mm; font-size: 10pt; color: #d8c098; letter-spacing: 1px; }
+.cover .foot { position: absolute; bottom: 18mm; font-size: 9pt; color: #b89a70; }
+
+/* sumário */
+.toc { page-break-after: always; }
+.toc h1 { font: 26pt Georgia, serif; color: #7a2a10; border-bottom: 2px solid #d4a94a; padding-bottom: 3mm; }
+.toc a { color: inherit; text-decoration: none; }
+.toc1 { font: bold 11.5pt Georgia, serif; margin: 3.2mm 0 0.8mm; color: #4a2a10; break-inside: avoid; }
+.toc2 { font-size: 9.5pt; margin-left: 9mm; color: #5a4a3a; line-height: 1.45; }
+.toc span { display: inline-block; min-width: 22mm; color: #a07a3a; }
+.toc2 span { min-width: 11mm; }
+
+/* capítulos */
+section.chapter { page-break-before: always; }
+.chap-label { font: 11pt Georgia, serif; color: #b07a2a; letter-spacing: 3px; text-transform: uppercase; margin-top: 6mm; }
+h1 { font: 28pt/1.15 Georgia, serif; color: #7a2a10; margin: 1mm 0 8mm; padding-bottom: 4mm; border-bottom: 3px solid #d4a94a; }
+h2 { font: bold 16pt Georgia, serif; color: #5a2a10; margin: 9mm 0 3mm; break-after: avoid; }
+h2 .num { color: #c08a3a; font-weight: normal; margin-right: 2mm; }
+h3 { font: bold 12.5pt Georgia, serif; color: #6a3a14; margin: 6mm 0 2mm; break-after: avoid; }
+h4 { font: bold 11pt 'Segoe UI', sans-serif; color: #6a4a2a; margin: 4mm 0 1mm; break-after: avoid; }
+p { margin: 0 0 3mm; text-align: justify; hyphens: auto; orphans: 3; widows: 3; }
+ul, ol { margin: 0 0 3mm; padding-left: 7mm; }
+li { margin-bottom: 1mm; }
+a { color: #7a2a10; }
+strong { color: #3a1a06; }
+code { font: 9pt Consolas, 'Cascadia Mono', monospace; background: #f4ead6; color: #6a2a10; padding: 0.3mm 1.2mm; border-radius: 2px; }
+.pagebreak { page-break-after: always; }
+
+/* blocos de código */
+figure.code { margin: 2mm 0 4mm; break-inside: auto; }
+figure.code pre {
+  margin: 0; padding: 3mm 4mm; background: #1e1a16; color: #e8dcc8; border-radius: 3px;
+  font: 8.4pt/1.5 Consolas, 'Cascadia Mono', monospace; white-space: pre-wrap; word-break: break-word;
+  border-left: 3px solid #d4a94a;
+}
+figure.code pre code { background: none; color: inherit; padding: 0; font: inherit; }
+figure.code figcaption {
+  display: flex; justify-content: space-between; font: 8pt Consolas, monospace; color: #fff; background: #6a4a24;
+  padding: 1mm 4mm; border-radius: 3px 3px 0 0; break-after: avoid;
+}
+figure.real pre { border-radius: 0 0 3px 3px; }
+.c { color: #8a9a7a; font-style: italic; }
+.s { color: #e6b86a; }
+.n { color: #d08a6a; }
+.k { color: #e88a8a; font-weight: bold; }
+.f { color: #8ac0e8; }
+
+/* caixas */
+.box { border-radius: 4px; padding: 3mm 4mm 1mm; margin: 3mm 0 4mm; break-inside: avoid; border-left: 4px solid; }
+.box-t { font-weight: bold; margin-bottom: 1.5mm; font-size: 10pt; }
+.box p { text-align: left; }
+.box.dica { background: #eef6e8; border-color: #5a9a3a; }
+.box.atencao { background: #fdf0e0; border-color: #d4882a; }
+.box.exercicio { background: #e8f0fa; border-color: #3a6aaa; }
+.box.resposta { background: #eef8f0; border-color: #3a8a5a; }
+.box.porque { background: #f6eefa; border-color: #8a4aaa; }
+.box.nota { background: #f6f2e6; border-color: #a08a4a; }
+.box.bug { background: #fbeceb; border-color: #b03a2a; }
+.box.mao { background: #fff7d8; border-color: #c8a020; }
+.box figure.code { margin: 1mm 0 2mm; }
+
+/* tabelas */
+table { width: 100%; border-collapse: collapse; margin: 2mm 0 5mm; font-size: 9.2pt; break-inside: auto; }
+th { background: #6a4a24; color: #fff; text-align: left; padding: 1.5mm 2.5mm; }
+td { border-bottom: 1px solid #e0d0b0; padding: 1.5mm 2.5mm; vertical-align: top; }
+tr:nth-child(even) td { background: #faf5ea; }
+tr { break-inside: avoid; }
+
+/* diagramas feitos em HTML */
+.diagram { display: flex; flex-wrap: wrap; gap: 3mm; align-items: center; justify-content: center; margin: 4mm 0 6mm; break-inside: avoid; }
+.diagram .node { border: 2px solid #a07a3a; background: #fbf3e2; border-radius: 4px; padding: 2mm 3.5mm; font-size: 9pt; text-align: center; }
+.diagram .node b { display: block; color: #7a2a10; font-size: 9.5pt; }
+.diagram .arrow { color: #a07a3a; font-size: 14pt; }
+.diagram.col { flex-direction: column; }
+.tree { font: 8.8pt/1.45 Consolas, monospace; background: #fbf3e2; border: 1px solid #e0d0b0; padding: 3mm 4mm; border-radius: 3px; white-space: pre; margin: 2mm 0 4mm; break-inside: avoid; }
+.grid-demo { display: grid; grid-template-columns: repeat(12, 7mm); gap: 0; margin: 3mm auto 5mm; width: max-content; break-inside: avoid; }
+.grid-demo div { width: 7mm; height: 7mm; border: 0.2mm solid rgba(0,0,0,0.15); font: 6pt monospace; text-align: center; line-height: 7mm; }

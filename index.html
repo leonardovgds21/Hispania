@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hispânia — De Atapuerca a La Moncloa</title>
+  <meta name="description" content="RPG 2D que conta a história da Espanha, da pré-história até hoje.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <canvas id="game"></canvas>
+
+  <div id="hud" class="hidden">
+    <div class="panel stats">
+      <div class="hname"><b id="h-name"></b> · <span id="h-class"></span></div>
+      <div class="bar hp"><div id="h-hp"></div><span id="h-hpt"></span></div>
+      <div class="bar xp"><div id="h-xp"></div><span id="h-xpt"></span></div>
+      <div class="hrow"><span id="h-gold"></span><span id="h-pot"></span></div>
+      <div class="hrow"><span id="h-ammo"></span></div>
+    </div>
+    <div class="panel tracker" id="tracker"></div>
+    <div class="chapter" id="h-chapter"></div>
+    <div class="keys" id="keysbar"></div>
+  </div>
+
+  <div id="toasts"></div>
+
+  <div id="dialog" class="hidden">
+    <div class="who"></div>
+    <div class="text"></div>
+    <div class="opts"></div>
+    <div class="hint"></div>
+  </div>
+
+  <div id="modal" class="hidden"><div class="box"></div></div>
+
+  <div id="title" class="hidden"></div>
+
+  <script src="js/util.js"></script>
+  <script src="js/i18n.js"></script>
+  <script src="js/data/base.js"></script>
+  <script src="js/data/chapters1.js"></script>
+  <script src="js/data/chapters2.js"></script>
+  <script src="js/data/chapters3.js"></script>
+  <script src="js/data/es_base.js"></script>
+  <script src="js/data/es1.js"></script>
+  <script src="js/data/es2.js"></script>
+  <script src="js/data/es3.js"></script>
+  <script src="js/music.js"></script>
+  <script src="js/world.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+  <script>applyLanguage(); UI.staticTexts(); UI.title();</script>
+</body>
+</html>
